@@ -14,7 +14,6 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { JwtService } from '@nestjs/jwt';
 
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -22,11 +21,13 @@ export class UsersController {
     private readonly jwtService: JwtService, // вот здесь внедриваем сервис
   ) {}
 
-  @Get('all')
+  @Get()
   async findAll() {
+    console.log('Fetching all users');
     return this.usersService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async me(@Headers('authorization') authHeader?: string) {
     const token = authHeader?.replace('Bearer ', '');
@@ -42,22 +43,22 @@ export class UsersController {
   }
 
   @Roles('owner')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
-  // Обновить пользователя по id — только owner
-  @Roles('owner')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: any) {
+    console.log(body, id);
     return this.usersService.update(id, body);
   }
 
   // Удалить пользователя по id — только owner
-  @Roles('owner')
   @Delete(':id')
   async remove(@Param('id') id: string) {
+    console.log(`Deleting user with id: ${id}`);
     return this.usersService.remove(id);
   }
 }

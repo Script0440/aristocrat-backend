@@ -16,7 +16,6 @@ export class UsersService {
     const user = await this.userModel.findById(id).select('-password');
 
     if (!user) throw new NotFoundException('Пользователь не найден');
-    console.log(user);
     return user;
   }
 
@@ -36,9 +35,6 @@ export class UsersService {
   }
 
   async update(id: string, data: any) {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, 10);
-    }
     const updated = await this.userModel
       .findByIdAndUpdate(id, data, { new: true })
       .select('-password');

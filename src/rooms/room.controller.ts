@@ -146,6 +146,7 @@ export class RoomsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Room> {
+    console.log(id);
     return this.roomsService.findOne(id);
   }
 

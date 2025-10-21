@@ -1,39 +1,45 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type RoomDocument = Room & Document;
-
-export enum RoomProvider {
-  OSTROVOK = 'OSTROVOK',
-  BOOKING = 'BOOKING',
-  NONE = 'NONE',
-}
+export type BookingDocument = Booking & Document;
 
 @Schema({ timestamps: true })
-export class Room {
+export class Booking {
   @Prop({ required: true, unique: true })
   number: number;
 
-  @Prop({ required: true })
-  firstName: string;
+  @Prop({ required: true, unique: true })
+  roomId: string;
 
   @Prop({ required: true })
-  lastName: string;
+  guestsList: string[];
 
   @Prop({ default: false })
   isPaid: boolean;
 
   @Prop({ required: true })
-  checkIn: String;
+  paymentMethod: string;
+
+  @Prop({ type: Date, required: true })
+  checkIn: Date;
+
+  @Prop({ type: Date, required: true })
+  checkOut: Date;
 
   @Prop({ required: true })
-  checkOut: String;
+  breakfast: boolean;
 
   @Prop({ required: true })
   peopleCount: number;
 
-  @Prop({ type: String, required: true, enum: RoomProvider })
-  provider: RoomProvider;
+  @Prop({ type: String, required: true })
+  provider: string;
+
+  @Prop({ required: false })
+  providerId: string;
+
+  @Prop({ required: true })
+  totalPrice: number;
 }
 
-export const RoomSchema = SchemaFactory.createForClass(Room);
+export const BookingSchema = SchemaFactory.createForClass(Booking);

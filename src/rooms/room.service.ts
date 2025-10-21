@@ -4,12 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Room, RoomDocument } from './room.schema';
+import { Booking, BookingDocument } from '../booking/booking.schema';
 
 @Injectable()
 export class RoomsService {
-  constructor(@InjectModel(Room.name) private roomModel: Model<RoomDocument>) {}
+  constructor(
+    @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
+    @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+  ) {}
 
   async create(data: any): Promise<Room> {
     try {
@@ -40,8 +44,23 @@ export class RoomsService {
     }
   }
 
-  async findAll(): Promise<Room[]> {
-    return this.roomModel.find().exec();
+  async findAll(): Promise<any[]> {
+    const rooms = await this.roomModel.find().exec();
+
+    // берём все брони
+    const bookings = await this.bookingModel.find().exec();
+
+    // собираем все roomId, которые забронированы хоть раз
+    const bookedRoomIds = bookings.map((b) => b.roomId.toString());
+
+    // возвращаем комнаты с статусом: true = свободна, false = занята
+    return rooms.map((room) => {
+      const roomId = (room._id as Types.ObjectId).toString();
+      return {
+        ...room.toObject(),
+        status: !bookedRoomIds.includes(roomId),
+      };
+    });
   }
 
   async findOne(id: string): Promise<Room> {

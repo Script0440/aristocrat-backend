@@ -3,12 +3,6 @@ import { Document } from 'mongoose';
 
 export type RoomDocument = Room & Document;
 
-export enum RoomTypes {
-  STANDART_DOUBLE_ROOM = 'STANDART_DOUBLE_ROOM',
-  STANDART_TRIPLE_ROOM = 'STANDART_TRIPLE_ROOM',
-  FAMILY_STUDIO_ROOM = 'FAMILY_STUDIO_ROOM',
-}
-
 export enum RoomBeds {
   TWIN_BED = 'TWIN_BED',
   SINGLE_BED = 'SINGLE_BED',
@@ -31,8 +25,8 @@ export class Room {
   @Prop({ required: true, unique: true })
   number: number;
 
-  @Prop({ required: true, enum: RoomTypes })
-  type: RoomTypes;
+  @Prop({ required: true })
+  type: string;
 
   @Prop({ required: true })
   size: number;
@@ -48,9 +42,6 @@ export class Room {
 
   @Prop({ default: false })
   isClean: boolean;
-
-  @Prop({ default: false })
-  status: boolean;
 
   @Prop({ required: true })
   mainImage: string;
